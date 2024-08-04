@@ -1,0 +1,85 @@
+import numpy as np
+import sympy as sp
+import math
+
+# Define the variable t
+t = sp.symbols('t')
+
+
+############################################
+#CHANGE THE FOLLOWING TO YOUR VALUES PLEASE#
+############################################
+# Define the components of r_P/O(t)
+
+xP = (1/9)*t**2 - (22/9)*t + (148/9)
+yP = (1/9)*t**2 - (22/9)*t + (148/9)
+zP = (2/9)*t**2 - (44/9)*t + (269/9)
+
+############################################
+#CHANGE THE FOLLOWING TO YOUR VALUES PLEASE#
+############################################
+# Define the components of r_Q/O(t)
+xQ = (1/27)*t**3 - (19/18)*t**2 + (88/9)*t - (746/27)
+yQ = (1/27)*t**3 - (19/18)*t**2 + (88/9)*t - (746/27)
+zQ = (1/18)*t**3 - (19/12)*t**2 + (44/3)*t - (382/9)
+
+# Calculate the difference r_Q/O(t) - r_P/O(t)
+dx = xQ - xP
+dy = yQ - yP
+dz = zQ - zP
+
+# Calculate the squared distance
+f_t = dx**2 + dy**2 + dz**2
+
+# Derive f to get g
+g_t = sp.diff(f_t)
+
+# Derive g to get h
+h_t = sp.diff(g_t)
+
+print("a_6 = ",round(f_t.subs(t,0)))
+print("g(0) = ", round(g_t.subs(t,0)))
+
+###############################################################################################
+#CHANGE THE FOLLOWING TO YOUR VALUES PLEASE (it should be what question 11 is asking from you)#
+###############################################################################################
+print("g(17) = ", round(g_t.subs(t,17)))
+
+
+
+######################
+# NEWTON's METHOD!!! #
+######################
+
+
+# User input for stopping criteria
+stop = int(input("Enter the number of iterations to stop after, enter -1 to continue until convergence \n"))
+c = float(input("Enter your initial guess: \n"))  # Initial guess
+epsilon = 0.001  # Convergence criterion
+
+if stop == -1:
+    # While loop with convergence
+    iteration = 0
+    while True:
+        g_val = g_t.subs(t, c)
+        h_val = h_t.subs(t, c)
+       
+        c_new = c - (g_val / h_val).evalf()
+        print(f"Iteration {iteration + 1}: c = {c_new}, g(c) = {g_val}, h(c) = {h_val}")
+        if abs(c_new - c) < epsilon:
+            c = c_new
+            break
+        c = c_new
+        iteration += 1
+else:
+    # For loop without convergence
+    for i in range(stop):
+        g_val = g_t.subs(t, c)
+        h_val = h_t.subs(t, c)
+       
+        c_new = c - (g_val / h_val).evalf()
+        print(f"Iteration {i + 1}: c = {c_new}, g(c) = {g_val}, h(c) = {h_val}")
+        c = c_new
+
+print(f"Final result: {c_new}")
+print(f"Function approximation: {g_t.subs(t, c_new)}")
